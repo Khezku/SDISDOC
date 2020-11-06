@@ -120,7 +120,7 @@ paths:
         - in: body
           name: NoteModification
           schema:
-            $ref: '#/definitions/StatusModification'
+            $ref: '#/definitions/NoteModification'
       responses:
         '200':
           description: OK
@@ -148,7 +148,7 @@ paths:
         - in: body
           name: EcheanceModification
           schema:
-            $ref: '#/definitions/UrgenceModification'
+            $ref: '#/definitions/DeadlineModification'
       responses:
         '200':
           description: OK
@@ -156,13 +156,13 @@ paths:
     put:
       tags:
       - Urgence
-      summary: permet de modifier l'urgence d'un signalement si les droits de l'utilisateur (idzntifié grâce au token) le permettent
+      summary: 'permet de modifier l''urgence d''un signalement si les droits de l''utilisateur (idzntifié grâce au token) le permettent'
       description: Cette requête permet de changer l'état d'urgence d'un signalement
       parameters:
         - in: body
           name: UrgenceModification
           schema:
-            $ref: '#/definitions/UrgenceModification'
+            $ref: '#/definitions/UrgencyModification'
       responses:
         '200':
           description: OK
@@ -281,15 +281,15 @@ definitions:
               type: string
             comment:
               type: string
-  # NoteModification:
-  #   type: object
-  #   properties:
-  #     reportId:
-  #       type: integer
-  #       format: int64
-  #     note:
-  #       type: integer
-  #       format: int32
+  NoteModification:
+    type: object
+    properties:
+      reportId:
+        type: integer
+        format: int64
+      note:
+        type: integer
+        format: int64
   StatusModification:
     type: object
     properties:
@@ -305,7 +305,15 @@ definitions:
       comment:
         type: string
         format: date-time
-  UrgenceModification:
+  UrgencyModification:
+    type: object
+    properties:
+      reportId:
+        type: integer
+        format: int64
+      urgency:
+        type: string
+  DeadlineModification:
     type: object
     properties:
       reportId:
@@ -314,8 +322,6 @@ definitions:
       deadLine:
         type: string
         format: date-time
-      urgency:
-        type: string
 externalDocs:
   description: Find out more about Swagger
   url: 'http://swagger.io'
