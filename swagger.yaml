@@ -166,7 +166,40 @@ paths:
       responses:
         '200':
           description: OK
+  /numbersNotifications:
+    get:
+    
+      tags: 
+        - Notifications
+      summary: 'Retourne le nombre de notifications pour un user'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: 'integer'
+  /notifications:
+    get:
+      tags: 
+        - Notifications
+      summary: 'Retourne la liste des notifications et les marque comme vu'
+      responses:
+        '200':
+          description: OK
+          schema: 
+            type: 'array'
+            items:
+              $ref: '#/definitions/Notifications'
 definitions:
+  Notifications:
+    type: object 
+    properties:
+      text: 
+        type: 'string'
+      vu: 
+        type: 'boolean'
+      date: 
+        type: 'string'
+        format: 'date-time'
   Signalement:
     type: object
     properties:
