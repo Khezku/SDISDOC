@@ -214,7 +214,7 @@ paths:
       responses:
         '200':
           description: OK
-    /utilisateurs:
+  /utilisateurs:
     post:
       tags:
         - Utilisateurs
@@ -614,6 +614,48 @@ definitions:
               type: string
             comment:
               type: string
+  Utilisateur:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: ID d'utilisateur
+      nom:
+        type: string
+      prenom:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      notesMoyenneSignalement:
+        type: number
+      matricule:
+        type: string
+      company:
+        type: string
+      unite:
+        type: string
+        
+  Historique:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: ID d'utilisateur
+      modificationType:
+        type: string
+      date:
+        type: string
+      auteur:
+        type: string
+      description:
+        type: string
+      commentaire:
+        type: string
+        
   NoteModification:
     type: object
     properties:
