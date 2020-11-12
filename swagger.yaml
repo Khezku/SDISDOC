@@ -21,28 +21,52 @@ paths:
       consumes:
         - application/x-www-form-urlencoded
       parameters:
-        - name: authorId
-          in: query
-          description: ID de l'utilisateur qui a créé le ticket
-          type: number
-        - name: title
-          in: query
-          description: Titre du signalement
-          type: number
-        - name: type
-          in: query
-          description: Type du signalement
-          type: string
-        - name: emergency
-          in: query
-          description: Urgence du signalement
-          type: string
-        - name: tags
-          in: query
-          description: Tags du signalement
-          type: array
-          items:
-            type: string
+        - name: 'object'
+          in: body
+          schema:
+            type: object 
+            properties:
+              type: 
+                type : string
+                description: Type du signalement
+              emergency:
+                description: Urgence du signalement
+                type: string
+              carteCenter: 
+                type: object 
+                items: 
+                  $ref: '#/definitions/Point'
+                description: 'Centre de la carte, point sélectionné'
+              specificField:
+                type: string 
+                description: 'Comprend toute la liste des champs complémentaires permettant d''effectuer le signalement'
+              cause:
+                type: string 
+                description: 'Cause plus précise que le type'
+              townName:
+                type: string
+              insee:
+                type: string
+              territorialUnity:
+                type: string
+              company:
+                type: string 
+              category: 
+                type: string
+              attachments:
+                type: array
+                items:
+                  type: object 
+                  properties:
+                    value:
+                      type: string 
+                      description: 'Fichier contenant les infos'
+              tags:
+                description: Tags du signalement
+                type: array
+                items:
+                  type: string
+              
       responses:
         '200':
           description: OK
@@ -115,7 +139,7 @@ paths:
       tags:
       - Note
       summary: Permet de modifier la note attribuer un signalement
-      description: Cette requête permet de modifier/ajouter une note a un signalement
+      description: Cette requête permet de modifier/ajouter une note a un signalement et recalcule automatiquement la moyenne de notes de l'utilisateur
       parameters:
         - in: body
           name: NoteModification
@@ -124,6 +148,282 @@ paths:
       responses:
         '200':
           description: OK
+  /comment:
+    put:
+      tags: 
+      - Comment
+      description: Permet de demander des informations complémentaires à l'auteur du ticket ou de répondre à un commentaire posté par un gestionnaire
+      parameters:
+        - in: body 
+          name: comment
+          schema: 
+            type: object
+            properties:
+              reportId: 
+                type: integer
+              comment:
+                type: string
+      responses: 
+        '200': 
+          description: OK
+  /assign:
+    put:
+      tags: 
+        - Assign
+      description: 'Permet d''assigner un signalement à un gestionnaire ou à un groupe'
+      parameters:
+        - in: body 
+          name: modifyAssignement
+          schema:
+            type: object 
+            properties:
+              groupOrManagerId: 
+                type: integer
+              reportId:
+                type: integer
+              type:
+                type: string 
+                description: 'Définit s''il s''agit d''un groupe ou d''un manager'
+              
+      responses:
+        '200': 
+          description: 'OK'
+  /tags:
+    put:
+      tags:
+        - Tags
+      description: 'Permet de rajouter ou supprimer des tags liés à un signalement'
+      parameters:
+        - in: body
+          name: tagsModification
+          schema:
+            type: object
+            properties:
+              reportId: 
+                type: string
+              modifications:
+                type: array
+                items:
+                  type: object 
+                  properties:
+                    tagName: 
+                      type: 'string'
+                    modification:
+                      type: string
+                      description: 'Permet de définir si on l''ajoute ou si on souhaite le suprrimer de la liste'
+      responses:
+        '200':
+          description: OK
+    /utilisateurs:
+    post:
+      tags:
+        - Utilisateurs
+      summary: Permet de créer un nouveau utilisateur
+      description: Cette requête permet de créer un nouveau utilisateur en utilisant les informations passées en paramètres
+      operationId: postUtilisateur
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: Name
+          in: query
+          description: Nom de l'utilisateur
+          type: string
+          required: true
+        - name: prenom
+          in: query
+          description: Prénom de l'utilisateur
+          required: true
+          type: string
+        - name: email
+          in: query
+          description: Email de l'utilisateur
+          required: true
+          type: string
+        - name: password
+          in: query
+          required: true
+          description: Mot de passe hashé
+          type: string
+        - name: matricule
+          in: query
+          required: true
+          description: Matricule de l'utilisateur
+          type: string
+        - name: company
+          in: query
+          required: true
+          description: Companie de l'utilisateur
+          type: string   
+        - name: unite
+          in: query
+          required: true
+          description: Unité territoriale
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Utilisateur'
+    put:
+      tags:
+        - Utilisateurs
+      summary: Permet de modifier un utilisateur
+      description: Cette requête permet de modifier un utilisateur en utilisant les informations passées en paramètres
+      operationId: putUtilisateur
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: Name
+          in: query
+          description: Nom de l'utilisateur
+          type: string
+        - name: prenom
+          in: query
+          description: Prénom de l'utilisateur
+          type: string
+        - name: email
+          in: query
+          description: Email de l'utilisateur
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: Mot de passe hashé
+          type: string
+        - name: noteMoyenne
+          in: query
+          description: Note moyenne des signalements
+          type: number
+        - name: matricule
+          in: query
+          description: Matricule de l'utilisateur
+          type: string
+        - name: company
+          in: query
+          description: Companie de l'utilisateur
+          type: string   
+        - name: unite
+          in: query
+          description: Unité territoriale
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Utilisateur'
+    get:
+      tags:
+        - Utilisateurs
+      summary: Permet de récupérer un utilisateur
+      description: Cette requête permet de récupérer un utilisateur en filtrant par les informations passées en paramètres
+      operationId: getUtilisateur
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: Name
+          in: query
+          description: Nom de l'utilisateur
+          type: string
+        - name: prenom
+          in: query
+          description: Prénom de l'utilisateur
+          type: string
+        - name: email
+          in: query
+          description: Email de l'utilisateur
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: Mot de passe hashé
+          type: string
+        - name: noteMoyenne
+          in: query
+          description: Note moyenne des signalements
+          type: number
+        - name: matricule
+          in: query
+          description: Matricule de l'utilisateur
+          type: string
+        - name: company
+          in: query
+          description: Companie de l'utilisateur
+          type: string   
+        - name: unite
+          in: query
+          description: Unité territoriale
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Utilisateur'
+    delete:
+      tags:
+        - Utilisateurs
+      summary: Permet de supprimer un utilisateur
+      description: Cette requête renvoie un code d'erreur en fonction de la réussite de l'opération.
+      operationId: deleteUtilisateurs
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: query
+          description: Id de l'utilisateur
+          type: number
+          required: true
+
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Signalement non trouvé
+  /historiques:
+    get:
+      tags:
+        - Historiques
+      summary: Permet de récupérer les données historiques
+      description: Cette requête permet de rles données historiques en filtrant par les informations passées en paramètres
+      operationId: getHistorique
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: id
+          in: query
+          type: number
+          description: Id de la donnée historique
+        - name: Auteur
+          in: query
+          description: Utilisateur à l'origine de l'historique
+          type: string
+        - name: date
+          in: query
+          description: Date à filtrer
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Historique'
+
   /status:
     put:
       tags:
@@ -355,6 +655,42 @@ definitions:
       deadLine:
         type: string
         format: date-time
+  Geometry:
+    type: object
+    description: GeoJSon geometry
+    discriminator: type
+    required:
+      - type
+    externalDocs:
+      url: http://geojson.org/geojson-spec.html#geometry-objects
+    properties:
+      type:
+        type: string
+        enum:
+        - Point
+        - LineString
+        - Polygon
+        - MultiPoint
+        - MultiLineString
+        - MultiPolygon
+        description: the geometry type
+    
+  Point2D:
+    type: array
+    maxItems: 2
+    minItems: 2
+    items:
+      type: number
+  Point:
+    type: object
+    description: GeoJSon geometry
+    externalDocs:
+      url: http://geojson.org/geojson-spec.html#id2
+    allOf:
+      - $ref: "#/definitions/Geometry"
+      - properties:
+          coordinates:
+            $ref: '#/definitions/Point2D'
 externalDocs:
   description: Find out more about Swagger
   url: 'http://swagger.io'
