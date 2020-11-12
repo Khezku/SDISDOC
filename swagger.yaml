@@ -9,7 +9,7 @@ basePath: /v1
 schemes:
   - https
 paths:
-  /signalement:
+  /reports:
     post:
       tags:
         - Signalements
@@ -151,7 +151,7 @@ paths:
   /comment:
     put:
       tags: 
-      - Comment
+      - Commentaire
       description: Permet de demander des informations complémentaires à l'auteur du ticket ou de répondre à un commentaire posté par un gestionnaire
       parameters:
         - in: body 
@@ -169,7 +169,7 @@ paths:
   /assign:
     put:
       tags: 
-        - Assign
+        - Assignation
       description: 'Permet d''assigner un signalement à un gestionnaire ou à un groupe'
       parameters:
         - in: body 
@@ -214,7 +214,7 @@ paths:
       responses:
         '200':
           description: OK
-  /utilisateurs:
+  /users:
     post:
       tags:
         - Utilisateurs
@@ -392,10 +392,10 @@ paths:
           description: OK
         '404':
           description: Signalement non trouvé
-  /historiques:
+  /history:
     get:
       tags:
-        - Historiques
+        - Historique
       summary: Permet de récupérer les données historiques
       description: Cette requête permet de rles données historiques en filtrant par les informations passées en paramètres
       operationId: getHistorique
@@ -427,7 +427,7 @@ paths:
   /status:
     put:
       tags:
-        - Status
+        - Statut
       summary: Permet la modification du status si les droits de l'utilisateur (identifié grâce au token) le permettent
       description: 'Permet la modification du status si les droits de l''utilisateur (identifié grâce au token) le permettent, enregistre les modifications dans l''historique et renvoie des notifications aux utilisateurs concernés'
       parameters:
@@ -438,7 +438,7 @@ paths:
       responses:
         '200':
           description: OK
-  /echeance:
+  /deadline:
     put:
       tags:
       - Echéance
@@ -452,7 +452,7 @@ paths:
       responses:
         '200':
           description: OK
-  /urgence:
+  /urgency:
     put:
       tags:
       - Urgence
