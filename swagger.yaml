@@ -36,28 +36,52 @@ paths:
       consumes:
         - application/x-www-form-urlencoded
       parameters:
-        - name: authorId
-          in: query
-          description: ID de l'utilisateur qui a créé le ticket
-          type: number
-        - name: title
-          in: query
-          description: Titre du signalement
-          type: number
-        - name: type
-          in: query
-          description: Type du signalement
-          type: string
-        - name: emergency
-          in: query
-          description: Urgence du signalement
-          type: string
-        - name: tags
-          in: query
-          description: Tags du signalement
-          type: array
-          items:
-            type: string
+        - name: 'object'
+          in: body
+          schema:
+            type: object 
+            properties:
+              type: 
+                type : string
+                description: Type du signalement
+              emergency:
+                description: Urgence du signalement
+                type: string
+              carteCenter: 
+                type: object 
+                items: 
+                  $ref: '#/definitions/Point'
+                description: 'Centre de la carte, point sélectionné'
+              specificField:
+                type: string 
+                description: 'Comprend toute la liste des champs complémentaires permettant d''effectuer le signalement'
+              cause:
+                type: string 
+                description: 'Cause plus précise que le type'
+              townName:
+                type: string
+              insee:
+                type: string
+              territorialUnity:
+                type: string
+              company:
+                type: string 
+              category: 
+                type: string
+              attachments:
+                type: array
+                items:
+                  type: object 
+                  properties:
+                    value:
+                      type: string 
+                      description: 'Fichier contenant les infos'
+              tags:
+                description: Tags du signalement
+                type: array
+                items:
+                  type: string
+              
       responses:
         '200':
           description: OK
@@ -370,6 +394,43 @@ definitions:
       deadLine:
         type: string
         format: date-time
+  Geometry:
+    type: object
+    description: GeoJSon geometry
+    discriminator: type
+    required:
+      - type
+    externalDocs:
+      url: http://geojson.org/geojson-spec.html#geometry-objects
+    properties:
+      type:
+        type: string
+        enum:
+        - Point
+        - LineString
+        - Polygon
+        - MultiPoint
+        - MultiLineString
+        - MultiPolygon
+        description: the geometry type
+    
+  Point2D:
+    type: array
+    maxItems: 2
+    minItems: 2
+    items:
+      type: number
+  Point:
+    type: object
+    description: GeoJSon geometry
+    externalDocs:
+      url: http://geojson.org/geojson-spec.html#id2
+    allOf:
+      - $ref: "#/definitions/Geometry"
+      - properties:
+          coordinates:
+            $ref: '#/definitions/Point2D'
+
 externalDocs:
   description: Find out more about Swagger
   url: 'http://swagger.io'
