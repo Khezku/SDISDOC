@@ -24,7 +24,7 @@ paths:
       responses:
         '200':
           description: OK
-  /signalement:
+  /report:
     post:
       tags:
         - Signalements
@@ -44,9 +44,6 @@ paths:
               type: 
                 type : string
                 description: Type du signalement
-              emergency:
-                description: Urgence du signalement
-                type: string
               carteCenter: 
                 type: object 
                 items: 
@@ -62,12 +59,6 @@ paths:
                 type: string
               insee:
                 type: string
-              territorialUnity:
-                type: string
-              company:
-                type: string 
-              category: 
-                type: string
               attachments:
                 type: array
                 items:
@@ -76,6 +67,8 @@ paths:
                     value:
                       type: string 
                       description: 'Fichier contenant les infos'
+                    type: 
+                      type: string
               tags:
                 description: Tags du signalement
                 type: array
@@ -93,13 +86,25 @@ paths:
       tags:
         - Signalements
       summary: Permet de récupérer l'ensemble des informations des signalements
-      description: Cette requête renvoie des objets JSON sérialisés de classe Signalement. Il est possible de filtrer la recherche de signalement en passant des filtres en corps.
+      description: Cette requête renvoie des objets JSON sérialisés de classe Signalement. Il est possible de filtrer la recherche de signalement en passant des filtres en corps. Certains champs ne seront pas renvoyer selon le typeGet défini
       operationId: getSignalement
       produces:
         - application/json
       consumes:
         - application/json
       parameters:
+        - name: id
+          in: query
+          description: Permet de trouver le signalement par son id
+          type: number  
+        - name: typeGet
+          in: query 
+          description: Permet de définir pour quel type de vue on sert la requête afin de connaître les informations à retourner valeurs possibles (contributor, manager)
+          type: string
+        - name: assignedId
+          in: query
+          description: Permet de filtrer par l'utilisateur assigné
+          type: number      
         - name: authorId
           in: query
           description: Permet de filtrer par créateur en donnant un Id d'Utilisateur
@@ -177,7 +182,7 @@ paths:
       responses:
         '200':
           description: OK
-  /echeance:
+  /deadline:
     put:
       tags:
       - Echéance
@@ -191,7 +196,7 @@ paths:
       responses:
         '200':
           description: OK
-  /urgence:
+  /urgency:
     put:
       tags:
       - Urgence
@@ -215,7 +220,8 @@ paths:
         '200':
           description: OK
           schema:
-            type: 'integer'
+            type: integer
+            
   /notifications:
     get:
       tags: 
@@ -228,6 +234,29 @@ paths:
             type: 'array'
             items:
               $ref: '#/definitions/Notifications'
+  /history:
+    get:
+      tags: 
+        - Historique
+      summary:  'Retourne la liste des historiques selon certains paramètres'
+      parameters:
+        - name: historyId
+          in: query
+          type: string
+        - name: author
+          in: query
+          type: string
+          description: "id of author"
+        - name: date
+          in: query
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: 'object'
+            items: 
+              $ref: '#/definitions/History'
 definitions:
   Notifications:
     type: object 
@@ -282,17 +311,8 @@ definitions:
             format: int64
       manager:
         type: object
-        properties:
-          id:
-            type: integer
-            format: int64
-          name:
-            type: string
-          firstname:
-            type: string
-          averageNote:
-            type: integer
-            format: int64
+        items:
+          $ref: '#/definitions/UserLowVersion'
       tags:
         type: object
         properties:
@@ -304,6 +324,67 @@ definitions:
             format: int64
       author:
         type: object
+        items:
+          $ref: '#/definitions/UserFullVersion'
+      attachment:
+        type: array
+        items:
+          $ref: '#/definitions/Attachment'
+      localisation:
+        type: string
+        description: geojson du point
+      history:
+        type: array
+        items:
+          $ref: '#/definitions/History'
+  UserFullVersion:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      firstname:
+        type: string
+      averageNote:
+        type: integer
+        format: int64
+      territorialUnity:
+        type: string
+      company: 
+        type: string
+  UserLowVersion:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      firstname:
+        type: string
+  Attachment:
+    type: object 
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        blob:
+          type: string
+  History:
+    type: object
+    properties:
+      id:
+        type: string
+      modificationType:
+        type: string
+      date:
+        type: string
+        format: date-time
+      author:
+        type: object
         properties:
           id:
             type: integer
@@ -312,47 +393,10 @@ definitions:
             type: string
           firstname:
             type: string
-          averageNote:
-            type: integer
-            format: int64
-      attachment:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-            blob:
-              type: string
-      localisation:
+      description:
         type: string
-        description: geojson du point
-      history:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-            modificationType:
-              type: string
-            date:
-              type: string
-              format: date-time
-            author:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  format: int64
-                name:
-                  type: string
-                firstname:
-                  type: string
-            description:
-              type: string
-            comment:
-              type: string
+      comment:
+        type: string
   NoteModification:
     type: object
     properties:
